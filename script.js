@@ -1,4 +1,26 @@
 //your JS code here.
+describe("Quiz App - UI and Question Rendering", () => {
+  beforeEach(() => {
+    cy.visit("http://localhost:3000");   // change URL if needed
+  });
+
+  it("should display 5 questions, each with 4 options, a submit button and empty score", () => {
+    // Check 5 questions
+    cy.get(".question").should("have.length", 5);
+
+    // Each question has exactly 4 options
+    cy.get(".question").each(($q) => {
+      cy.wrap($q).find("input[type='radio']").should("have.length", 4);
+    });
+
+    // Submit button exists
+    cy.get("#submitBtn").should("exist");
+
+    // Score section is empty initially
+    cy.get("#scoreDisplay").should("be.empty");
+  });
+});
+
 
 // Do not change code below this line
 // This code will just display the questions to the screen
