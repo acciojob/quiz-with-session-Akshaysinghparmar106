@@ -1,1 +1,26 @@
 /*  your css code here. If applicable */
+body {
+    font-family: Arial, sans-serif;
+    background: #f2f2f2;
+}
+
+.container {
+    width: 400px;
+    margin: 60px auto;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+}
+
+#options div {
+    padding: 10px;
+    margin: 8px 0;
+    background: #e6e6e6;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#options div:hover {
+    background: #d9d9d9;
+}

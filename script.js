@@ -1,78 +1,76 @@
 //your JS code here.
-describe("Quiz App - UI and Question Rendering", () => {
-  beforeEach(() => {
-    cy.visit("http://localhost:3000");   // change URL if needed
-  });
-
-  it("should display 5 questions, each with 4 options, a submit button and empty score", () => {
-    // Check 5 questions
-    cy.get(".question").should("have.length", 5);
-
-    // Each question has exactly 4 options
-    cy.get(".question").each(($q) => {
-      cy.wrap($q).find("input[type='radio']").should("have.length", 4);
-    });
-
-    // Submit button exists
-    cy.get("#submitBtn").should("exist");
-
-    // Score section is empty initially
-    cy.get("#scoreDisplay").should("be.empty");
-  });
-});
-
-
-// Do not change code below this line
-// This code will just display the questions to the screen
 const questions = [
-  {
-    question: "What is the capital of France?",
-    choices: ["Paris", "London", "Berlin", "Madrid"],
-    answer: "Paris",
-  },
-  {
-    question: "What is the highest mountain in the world?",
-    choices: ["Everest", "Kilimanjaro", "Denali", "Matterhorn"],
-    answer: "Everest",
-  },
-  {
-    question: "What is the largest country by area?",
-    choices: ["Russia", "China", "Canada", "United States"],
-    answer: "Russia",
-  },
-  {
-    question: "Which is the largest planet in our solar system?",
-    choices: ["Earth", "Jupiter", "Mars"],
-    answer: "Jupiter",
-  },
-  {
-    question: "What is the capital of Canada?",
-    choices: ["Toronto", "Montreal", "Vancouver", "Ottawa"],
-    answer: "Ottawa",
-  },
+    {
+        question: "Which language runs in a web browser?",
+        options: ["Java", "C", "Python", "JavaScript"],
+        answer: 3
+    },
+    {
+        question: "What does CSS stand for?",
+        options: ["Central Style Sheets", "Cascading Style Sheets", "Computer Style System", "Colorful Style Sheets"],
+        answer: 1
+    },
+    {
+        question: "What does HTML stand for?",
+        options: ["Hyper Text Markup Language", "Home Tool Markup Language", "Hyperlinks and Text Markup Language"],
+        answer: 0
+    }
 ];
 
-// Display the quiz questions and choices
-function renderQuestions() {
-  for (let i = 0; i < questions.length; i++) {
-    const question = questions[i];
-    const questionElement = document.createElement("div");
-    const questionText = document.createTextNode(question.question);
-    questionElement.appendChild(questionText);
-    for (let j = 0; j < question.choices.length; j++) {
-      const choice = question.choices[j];
-      const choiceElement = document.createElement("input");
-      choiceElement.setAttribute("type", "radio");
-      choiceElement.setAttribute("name", `question-${i}`);
-      choiceElement.setAttribute("value", choice);
-      if (userAnswers[i] === choice) {
-        choiceElement.setAttribute("checked", true);
-      }
-      const choiceText = document.createTextNode(choice);
-      questionElement.appendChild(choiceElement);
-      questionElement.appendChild(choiceText);
+let index = 0; // current question index
+
+// Display first question when page loads
+window.onload = () => {
+    sessionStorage.clear();  // start fresh
+    loadQuestion();
+};
+
+function loadQuestion() {
+    document.getElementById("question").textContent = questions[index].question;
+
+    let optionBox = document.getElementById("options");
+    optionBox.innerHTML = "";
+
+    questions[index].options.forEach((opt, i) => {
+        const optionDiv = document.createElement("div");
+        optionDiv.textContent = opt;
+        optionDiv.onclick = () => selectOption(i);
+        optionBox.appendChild(optionDiv);
+    });
+
+    if (index === questions.length - 1) {
+        document.getElementById("nextBtn").style.display = "none";
+        document.getElementById("finishBtn").style.display = "block";
     }
-    questionsElement.appendChild(questionElement);
-  }
 }
-renderQuestions();
+
+function selectOption(optionIndex) {
+    // Store selected option in sessionStorage
+    sessionStorage.setItem(`q${index}`, optionIndex);
+}
+
+function nextQuestion() {
+    index++;
+    loadQuestion();
+}
+
+function finishQuiz() {
+    let score = 0;
+
+    for (let i = 0; i < questions.length; i++) {
+        let selected = sessionStorage.getItem(`q${i}`);
+
+        if (selected != null && parseInt(selected) === questions[i].answer) {
+            score++;
+        }
+    }
+
+    document.getElementById("quiz-box").style.display = "none";
+    document.getElementById("result-box").style.display = "block";
+    document.getElementById("score").textContent = `${score} / ${questions.length}`;
+}
+
+function restartQuiz() {
+    sessionStorage.clear();
+    location.reload();
+}
